@@ -13,17 +13,22 @@
     </div>
     <div class="bg-white d-flex flex-column align-items-center justify-content-center rounded m-auto py-5 container" style="width: 65rem;">
         <form class="mb-3" method="post">
-            <div class="mb-3">
+            <div class="mb-3 text-center">
                 <label for="dni" class="form-label">DNI del cliente</label>
                 <input type="number" class="form-control" id="dni" name="dni" placeholder="Ingrese el dni">
             </div>
-            <div class="mb-3">
+            <div class="mb-3 text-center">
                 <label for="numero_reserva" class="form-label">Número de reserva</label>
                 <input type="number" class="form-control" id="numero_reserva" name="numero_reserva" placeholder="Ingrese el número de reserva">
             </div>
-            <div class="d-flex justify-content-between">
-                <button type="submit" formaction="/agregar_reserva" class="btn btn-primary">Agregar</button>
+            <div class="d-flex justify-content-center mb-3">
                 <button type="submit" formaction="/mostrar_reserva" class="btn btn-warning">Buscar</button>
+                
+            </div>
+
+            <div class="d-flex flex-column justify-content-center ">
+                <p class="fz-bold text-center">¿No se encontro la reserva?</p>
+                <button type="submit" formaction="/agregar_reserva" class="btn btn-success" style="width: 20rem;">Agregar nuevo reserva</button>
             </div>
         </form>
     </div>

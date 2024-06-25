@@ -23,12 +23,12 @@ def inicializar_datos():
         if not Cliente.tabla_clientes_existe(db):
             Cliente.crear_tabla_clientes(db)
             Cliente.agregar_cliente(db, '43634567', 'Juan', 'Perez', '12345678', 'juanperez@gmail.com', 'Argentino')
-            Cliente.agregar_cliente(db, '30433213', 'Ana', 'Belloni', '41325123', 'ana@gmail.com', 'Uruguayo')
+            Cliente.agregar_cliente(db, '30433213', 'Rafael', 'Belloni', '41325123', 'ana@gmail.com', 'Uruguayo')
         
         if not Reserva.tabla_reservas_existe(db):
             Reserva.crear_tabla_reservas(db)
-            Reserva.agregar_reserva(db, '20241201', '20241210', 2, 999.00, 1, 1, 1)
-            Reserva.agregar_reserva(db, '20240112', '20240212', 4, 1900.00, 1, 2, 1)
+            Reserva.agregar_reserva(db, '2024-12-10', '2024-12-13', 2, 999.00, 1, 1, 1)
+            Reserva.agregar_reserva(db, '2024-06-07', '2024-06-13', 4, 1900.00, 1, 2, 1)
 
 @app.route('/')
 def index():
@@ -54,8 +54,8 @@ def guardar_reserva_nueva():
         dni = request.form['dni']
         fecha_entrada = request.form['fecha_entrada']
         fecha_salida = request.form['fecha_salida']
-        cantidad_huespedes = request.form['cantidad_huespedes']
-        precio = request.form['precio']
+        cantidad_huespedes = int(request.form['cantidad_huespedes'])
+        precio = float(request.form['precio'])
         id_reserva_gestor = 1
         id_habitacion = 1 
 
@@ -74,20 +74,20 @@ def guardar_reserva_nueva():
 def mostrar_reserva():
     if request.method == 'POST':
         try:
-            numero_reserva = int(request.form['numero_reserva'])
             dni = int(request.form['dni'])
+            numero_reserva = int(request.form['numero_reserva'])
         except ValueError:
-            return "Número de reserva no válido", 400
+             return render_template('reserva_no_encontrada.html')
 
         reserva = Reserva.obtener_reserva(get_db(), numero_reserva)
         
         if reserva is None:
-            return "No se encontró ninguna reserva con ese número.", 404
+            return render_template('reserva_no_encontrada.html')
         
         cliente = Cliente.obtener_cliente(get_db(), int(reserva[6]))
 
         if dni != int(cliente[1]):
-            return "El DNI no coincide con el DNI del cliente de la reserva.", 400
+            return render_template('reserva_no_encontrada.html')
         
         return render_template('mostrar_reserva.html', reserva=reserva, cliente=cliente)
     return render_template('mostrar_reserva.html', reserva=None, cliente=None)
@@ -110,17 +110,21 @@ def editar_reserva():
 @app.route('/guardar_reserva_editada', methods=['GET', 'POST'])
 def guardar_reserva_editada():
     if request.method == 'POST':
-        id_reserva = request.form['id_reserva']
-        fecha_entrada = request.form['fecha_entrada']
-        fecha_salida = request.form['fecha_salida']
-        cantidad_huespedes = request.form['cantidad_huespedes']
-        precio = request.form['precio']
-        tipo_habitacion = request.form['tipo_habitacion']
-        origen_reserva = request.form['origen_reserva']
+        try:
+            id_reserva = int(request.form['id_reserva'])
+            fecha_entrada = request.form['fecha_entrada']
+            fecha_salida = request.form['fecha_salida']
+            cantidad_huespedes = int(request.form['cantidad_huespedes'])
+            precio = float(request.form['precio'])
+            tipo_habitacion = request.form['tipo_habitacion']
+            origen_reserva = request.form['origen_reserva']
 
-        Reserva.editar_reserva(get_db(),id_reserva, fecha_entrada, fecha_salida, cantidad_huespedes, precio, tipo_habitacion, origen_reserva)
+            Reserva.editar_reserva(get_db(), id_reserva, fecha_entrada, fecha_salida, cantidad_huespedes, precio, tipo_habitacion, origen_reserva)
+            return render_template('index.html')
 
-        return render_template('index.html')
+        except ValueError:
+            return "Invalid input data: ", 400
+
     return render_template('index.html')
 
 @app.route('/eliminar_reserva', methods=['GET', 'POST'])
